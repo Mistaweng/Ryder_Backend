@@ -35,7 +35,9 @@ namespace Ryder.Application.Order.Query.GetAllOrder
                     .Include(x => x.DropOffLocation)
                     .ToListAsync(cancellationToken);
 
-                return Result<List<Domain.Entities.Order>>.Success(allOrders);
+                var paginatedResult = allOrders.Skip((request.Page - 1) * request.PageSize).Take(request.PageSize).ToString();
+
+                return Result<List<Domain.Entities.Order>>.Success(paginatedResult);
             }
             catch (Exception)
             {
