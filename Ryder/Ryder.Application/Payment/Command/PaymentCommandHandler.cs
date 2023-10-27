@@ -1,7 +1,6 @@
 ﻿using AspNetCoreHero.Results;
 using MediatR;
 using PayStack.Net;
-using Ryder.Infrastructure.Interface;
 using Ryder.Infrastructure.Utility;
 using Serilog;
 
@@ -10,12 +9,11 @@ namespace Ryder.Application.Payment.Command
     public class PaymentCommandHandler : IRequestHandler<PaymentCommand, IResult<PaymentResponse>>
     {
         private readonly IPayStackApi _paystack;
-        private readonly ISmtpEmailService _emailService;
 
-        public PaymentCommandHandler(IPayStackApi paystack, ISmtpEmailService emailService)
+        public PaymentCommandHandler(IPayStackApi paystack)
         {
             _paystack = paystack;
-            _emailService = emailService;
+
         }
         public async Task<IResult<PaymentResponse>> Handle(PaymentCommand request, CancellationToken cancellationToken)
         {
@@ -43,25 +41,26 @@ namespace Ryder.Application.Payment.Command
                     response.Status = true;
                     response.AuthUrl = paymentInitiationResponse.Data.AuthorizationUrl;
                     response.Message = "Payment Initialization successful";
+                    response.OrderId = request.OrderId;
 
                     // Email subject
-                    var emailSubject = "Payment Confirmation - Please Complete Your Payment";
+                    //var emailSubject = "Payment Confirmation - Please Complete Your Payment";
 
-                    // Email message
-                    var emailMessage = $@"
-                        Thank you for choosing Ryder! You're just one step away from completing your payment for your recent order. 
-                        To make the payment process as smooth as possible, please click the link below to proceed with the payment:
+                    //// Email message
+                    //var emailMessage = $@"
+                    //    Thank you for choosing Ryder! You're just one step away from completing your payment for your recent order. 
+                    //    To make the payment process as smooth as possible, please click the link below to proceed with the payment:
 
-                        {response.AuthUrl}
+                    //    {response.AuthUrl}
 
-                        We appreciate your business and look forward to serving you again in the future.
+                    //    We appreciate your business and look forward to serving you again in the future.
 
-                        Best regards,
-                        The Ryder Team
-                        ";
+                    //    Best regards,
+                    //    The Ryder Team
+                    //    ";
 
-                    // send the email
-                    var emailSent = await _emailService.SendEmailAsync(request.Email, emailSubject, emailMessage);
+                    //// send the email
+                    //var emailSent = await _emailService.SendEmailAsync(request.Email, emailSubject, emailMessage);
                 }
                 else
                 {
