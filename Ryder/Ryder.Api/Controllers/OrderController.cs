@@ -43,9 +43,9 @@ namespace Ryder.Api.Controllers
 
 
         [HttpGet("getAllOrder")]
-        public async Task<IActionResult> GetAllOrder([FromQuery] Guid appUserId)
+        public async Task<IActionResult> GetAllOrder([FromQuery] Guid appUserId, int page = 1, int pageSize = 4)
         {
-            return await Initiate(() => Mediator.Send(new GetAllOrderQuery { AppUserId = appUserId }));
+            return await Initiate(() => Mediator.Send(new GetAllOrderQuery(appUserId, page: page, pageSize: pageSize )));
         }
 
 
